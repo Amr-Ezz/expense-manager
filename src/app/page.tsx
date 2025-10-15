@@ -1,4 +1,3 @@
-// src/app/page.tsx
 import StatsCard from "./components/StatsCard";
 import ChartsArea from "./components/ChartsCard";
 import RecentTransactions from "./components/RecentTransactions";
