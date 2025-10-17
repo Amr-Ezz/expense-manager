@@ -1,8 +1,10 @@
 import { Transaction } from "@/types";
+ import { v4 as uuidv4 } from "uuid";
+
 
 export const defaultTransactions: Transaction[] = [
   {
-    id: "1",
+    id: uuidv4(),
     description: "Groceries",
     amount: 45.5,
     category: "Food",
@@ -10,7 +12,7 @@ export const defaultTransactions: Transaction[] = [
     type: "expense",
   },
   {
-    id: "2",
+    id: uuidv4(),
     description: "Freelance Payment",
     amount: 300,
     category: "Work",
@@ -18,7 +20,7 @@ export const defaultTransactions: Transaction[] = [
     type: "income",
   },
   {
-    id: "3",
+    id: uuidv4(),
     description: "Electricity Bill",
     amount: 60,
     category: "Utilities",

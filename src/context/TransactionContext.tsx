@@ -4,6 +4,8 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 import { Transaction } from "@/types";
 import { TransactionsContextType } from "@/types";
 import { defaultTransactions } from "@/app/utils/sampleData";
+ import { v4 as uuidv4 } from "uuid";
+
 
 interface ExtendedTransactionsContextType extends TransactionsContextType {
   deleteTransaction: (id: string) => void;
@@ -36,11 +38,15 @@ export const TransactionsProvider = ({ children }: { children: ReactNode }) => {
   }, [transactions, currentUserId]);
   ///////////////////////////////////////////
 
-  const addTransaction = (
-    transaction: Transaction
-  ) => {
-    setTransactions((prev) => [...prev, transaction]);
+
+const addTransaction = (transaction: Omit<Transaction, "id">) => {
+  const newTransaction = {
+    ...transaction,
+    id: uuidv4(),
   };
+  setTransactions((prev) => [...prev, newTransaction]);
+};
+
   const getExpenses = () => transactions.filter((t) => t.type === "expense");
   const getIncomes = () => transactions.filter((t) => t.type === "income");
   ////////////////////////////////////////////////////////

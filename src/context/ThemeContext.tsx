@@ -1,38 +1,70 @@
 // src/context/ThemeContext.tsx
 "use client";
-import { createContext, useContext, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  ReactNode,
+  use,
+  useState,
+  useEffect,
+} from "react";
 
-const theme = {
-  colors: {
-    background: "#FAF8F1",
-    surface: "#FAEAB1",
-    primary: "#34656D",
-    secondary: "#334443",
-    text: "#111827",
-    textSecondary: "#6B7280",
-    textTertiary: "#9CA3AF",
-    success: "#10B981",
-    danger: "#EF4444",
-  },
-  radius: {
-    sm: "8px",
-    md: "12px",
-    lg: "16px",
-  },
-  shadow: {
-    sm: "0 1px 2px 0 rgba(0,0,0,0.05)",
-    md: "0 4px 6px -1px rgba(0,0,0,0.1)",
-    lg: "0 10px 15px -3px rgba(0,0,0,0.1)",
-  },
+interface Theme {
+  primary: string;
+  secondary: string;
+  accent: string;
+  highlight: string;
+  text: string;
+  background: string;
+}
+interface ThemeProviderProps {
+  theme: Theme;
+  mode: "light" | "dark";
+  toggleTheme?: () => void;
+}
+const lightTheme: Theme = {
+  primary: "#F5F5F5",
+  secondary: "#FFFFFF",
+  accent: "#3B82F6",
+  highlight: "#000000",
+  text: "#000000",
+  background: "#F9FAFB",
 };
 
-type ThemeContextType = typeof theme;
+const darkTheme: Theme = {
+  primary: "#1E201E",
+  secondary: "#3C3D37",
+  accent: "#697565",
+  highlight: "#ECDFCC",
+  text: "#ECDFCC",
+  background: "#1E201E",
+};
 
-const ThemeContext = createContext<ThemeContextType>(theme);
+const ThemeContext = createContext<ThemeProviderProps | undefined>(undefined);
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
+  const [mode, setMode] = useState<"light" | "dark">("light");
+  useEffect(() => {
+    const storedMode = localStorage.getItem("themeMode") as
+      | "light"
+      | "dark"
+      | null;
+    if (storedMode === "light" || storedMode === "dark") {
+      setMode(storedMode);
+    }
+  }, []);
+  const toggleTheme = () => {
+    setMode((prevMode) => {
+      const newMode = prevMode === "light" ? "dark" : "light";
+      localStorage.setItem("themeMode", newMode);
+      return newMode;
+    });
+  };
+  const theme = mode === "light" ? lightTheme : darkTheme;
   return (
-    <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>
+    <ThemeContext.Provider value={{ theme, mode, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
   );
 };
 
