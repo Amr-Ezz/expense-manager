@@ -1,14 +1,28 @@
 "use client";
-import { useTheme } from "../../context/ThemeContext";
+import { getTheme, ThemeMode, useTheme } from "../../context/ThemeContext";
 import { useCurrency } from "../../context/CurrencyContext";
+import { useMemo, useState } from "react";
 
 const SettingsPage = () => {
   const themeContext = useTheme();
   if (!themeContext) {
     throw new Error("ThemeContext is undefined. Make sure your component is wrapped in ThemeProvider.");
   }
-  const { theme, mode, toggleTheme } = themeContext;
-  const { currency, setCurrency } = useCurrency();
+  const { theme: currentTheme, mode: currentMode, setMode: setGlobalMode } = themeContext;
+  const { currency: currentCurrency, setCurrency: setGlobalCurrency } = useCurrency();
+
+  const [pendingMode, setPendingMode] = useState<ThemeMode>(currentMode);
+  const [pendingCurrency, setPendingCurrency] = useState<string>(currentCurrency);
+  const previewTheme = useMemo(() => getTheme(pendingMode), [pendingMode]);
+  const hasChanges = pendingMode !== currentMode || pendingCurrency !== currentCurrency;
+  const handleApply = () => {
+    if (pendingMode !== currentMode) setGlobalMode(pendingMode);
+    if (pendingCurrency !== currentCurrency) setGlobalCurrency(pendingCurrency);
+  };
+  const handleCancel = () => {
+  setPendingMode(currentMode);
+  setPendingCurrency(currentCurrency);
+}
 
   const currencies = [
     { code: "USD", symbol: "$" },
@@ -17,82 +31,118 @@ const SettingsPage = () => {
     { code: "GBP", symbol: "£" },
   ];
 
+
   return (
-    <div
-      style={{
-        backgroundColor: theme.background,
-        color: theme.text,
-      }}
-      className="min-h-screen flex items-center justify-center p-6"
-    >
+  <div className="p-6">
       <div
+        className="max-w-3xl mx-auto rounded-2xl p-6"
         style={{
-          backgroundColor: theme.secondary,
-          color: theme.text,
-          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)",
-          border: `1px solid ${theme.accent}`,
+          background: currentTheme.primary,
+          color: currentTheme.text,
+          border: `1px solid ${currentTheme.accent}`,
         }}
-        className="w-full max-w-3xl rounded-2xl p-8 space-y-10"
       >
-        <h1 className="text-3xl font-semibold text-center mb-6">
-          ⚙️ App Settings
-        </h1>
+        <h1 className="text-2xl font-semibold mb-4">Settings</h1>
 
-        <div className="space-y-3">
-          <h2 className="text-xl font-medium">Theme</h2>
-          <p className="opacity-80">
-            Choose between light or dark mode for your interface.
-          </p>
-          <button
-            onClick={toggleTheme}
-            style={{
-              backgroundColor: theme.accent,
-              color: theme.highlight,
-            }}
-            className="px-5 py-2 rounded-xl transition hover:opacity-90"
-          >
-            Switch to {mode === "light" ? "Dark" : "Light"} Mode
-          </button>
-        </div>
+        <section className="mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <h2 className="text-lg font-medium">Theme</h2>
+              <p className="text-sm opacity-80">Choose app appearance (light/dark)</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setPendingMode("light")}
+                className={`px-3 py-2 rounded-md border ${
+                  pendingMode === "light" ? "ring-2 ring-offset-1" : ""
+                }`}
+                style={{
+                  background: pendingMode === "light" ? "#fff" : "transparent",
+                }}
+              >
+                Light
+              </button>
 
-        <div className="space-y-3">
-          <h2 className="text-xl font-medium">Currency</h2>
-          <p className="opacity-80">
-            Select your preferred currency for transactions.
-          </p>
-          <select
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value)}
-            style={{
-              backgroundColor: theme.primary,
-              color: theme.text,
-              border: `1px solid ${theme.accent}`,
-            }}
-            className="w-full p-3 rounded-xl outline-none"
-          >
-            {currencies.map((cur) => (
-              <option key={cur.code} value={cur.code}>
-                {cur.code} ({cur.symbol})
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="grid grid-cols-4 gap-4 pt-8 align-center justify-between">
-       
-          <div
-            style={{ backgroundColor: theme.secondary }}
-            className="rounded-xl p-4 text-center"
-          >
-            Apply
+              <button
+                onClick={() => setPendingMode("dark")}
+                className={`px-3 py-2 rounded-md border ${
+                  pendingMode === "dark" ? "ring-2 ring-offset-1" : ""
+                }`}
+                style={{
+                  background: pendingMode === "dark" ? previewTheme.secondary : "transparent",
+                  color: pendingMode === "dark" ? previewTheme.text : undefined,
+                }}
+              >
+                Dark
+              </button>
+            </div>
           </div>
+
+          {/* Preview box (applies only pendingTheme) */}
           <div
-            style={{ backgroundColor: theme.accent }}
-            className="rounded-xl p-4 text-center"
+            className="rounded-lg p-4 mt-3"
+            style={{
+              background: previewTheme.secondary,
+              color: previewTheme.text,
+              border: `1px solid ${previewTheme.accent}`,
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-semibold">Preview Title</div>
+                <div className="text-sm opacity-80">This is how your UI will look</div>
+              </div>
+              <div className="px-3 py-1 rounded-full" style={{ background: previewTheme.accent, color: previewTheme.highlight }}>
+                CTA
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* --- Currency selection --- */}
+        <section className="mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <div>
+              <h2 className="text-lg font-medium">Currency</h2>
+              <p className="text-sm opacity-80">Choose default currency for new transactions</p>
+            </div>
+            <select
+              value={pendingCurrency}
+              onChange={(e) => setPendingCurrency(e.target.value)}
+              className="p-2 rounded-lg border"
+              style={{ background: previewTheme.primary, color: previewTheme.text, borderColor: previewTheme.accent }}
+            >
+              {currencies.map((c) => (
+                <option key={c.code} value={c.code}>
+                  {c.code} ({c.symbol})
+                </option>
+              ))}
+            </select>
+          </div>
+        </section>
+
+        {/* --- Actions --- */}
+        <div className="flex justify-end gap-3 mt-4">
+          <button
+            onClick={handleCancel}
+            className="px-4 py-2 rounded-md border"
+            style={{ background: currentTheme.primary, color: currentTheme.text, borderColor: currentTheme.accent }}
           >
             Cancel
-          </div>
-         
+          </button>
+
+          <button
+            onClick={handleApply}
+            disabled={!hasChanges}
+            className={`px-4 py-2 rounded-md ${hasChanges ? "shadow-md" : "opacity-50 cursor-not-allowed"}`}
+            style={{
+              background: previewTheme.accent,
+              color: previewTheme.highlight,
+              border: `1px solid ${previewTheme.accent}`,
+            }}
+          >
+            Apply
+          </button>
         </div>
       </div>
     </div>

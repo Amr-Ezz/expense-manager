@@ -3,6 +3,7 @@
 
 import { useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function ChartsArea({ lineData, doughnutData }: { lineData?: any; doughnutData?: any }) {
   const lineRef = useRef<HTMLCanvasElement | null>(null);
@@ -11,8 +12,9 @@ export default function ChartsArea({ lineData, doughnutData }: { lineData?: any;
   const lineInstance = useRef<any>(null);
   const doughnutInstance = useRef<any>(null);
 
+  const {theme} = useTheme();
+
   useEffect(() => {
-    // sample fallback data if none provided
     const sampleLine = lineData ?? {
       labels: ["Jan", "Feb", "Mar", "Apr", "May"],
       datasets: [{
@@ -58,15 +60,15 @@ export default function ChartsArea({ lineData, doughnutData }: { lineData?: any;
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <div className="bg-[var(--color-surface)] p-4 rounded-2xl border border-[var(--border)] shadow-sm h-72">
-        <h3 className="text-lg font-semibold mb-3">Data Trends</h3>
+      <div className={`bg-${theme.primary} p-4 rounded-2xl border border-[var(--border)] shadow-sm h-72`}>
+        <h3 className={`text-lg font-semibold mb-3 text-`}>Data Trends</h3>
         <div className="h-56">
           <canvas ref={lineRef}></canvas>
         </div>
       </div>
 
-      <div className="bg-[var(--color-surface)] p-4 rounded-2xl border border-[var(--border)] shadow-sm h-72">
-        <h3 className="text-lg font-semibold mb-3">Category Breakdown</h3>
+      <div className={`bg-${theme.secondary} p-4 rounded-2xl border border-[var(--border)] shadow-sm h-72`}>
+        <h3 className={`text-lg font-semibold mb-3 text-${theme.text}`}>Category Breakdown</h3>
         <div className="h-56 flex items-center justify-center">
           <canvas ref={doughnutRef} style={{ width: "100%", height: "100%" }}></canvas>
         </div>

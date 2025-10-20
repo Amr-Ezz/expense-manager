@@ -18,14 +18,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-surface text-[#334443]">
-        <TransactionsProvider>
-          <ThemeProvider>
+        <ThemeProvider>
+          <TransactionsProvider>
             <CurrencyProvider>
               <Navbar />
-              <main className="pt-20 px-6">{children}</main>
+              <main className="pt-5 px-6">{children}</main>
             </CurrencyProvider>
-          </ThemeProvider>
-        </TransactionsProvider>
+          </TransactionsProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

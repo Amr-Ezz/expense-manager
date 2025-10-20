@@ -1,5 +1,6 @@
 "use client";
 
+import { useTheme } from "@/context/ThemeContext";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -12,18 +13,21 @@ const navItems = [
 ];
 
 export default function Navbar() {
+  const themeContext = useTheme();
+  if (!themeContext) {
+    throw new Error("ThemeContext is undefined. Make sure your component is wrapped in ThemeProvider.");
+  }
+  const { theme } = themeContext;
   const pathname = usePathname();
 
   return (
-    <nav className="bg-red-500 text-white shadow-md">
+    <nav className={`bg-${theme.accent} text-${theme.text} shadow-md`}>
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         
-        {/* Logo */}
         <Link href="/" className="text-2xl font-bold tracking-wide">
           MyFinance
         </Link>
 
-        {/* Nav Links */}
         <div className="md:flex space-x-8">
           {navItems.map((item) => (
             <Link
@@ -40,7 +44,6 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* Sign in */}
         <Link
           href="/signin"
           className="px-5 py-2 rounded-xl bg-tertiary hover:bg-quaternary text-sm font-semibold transition"
