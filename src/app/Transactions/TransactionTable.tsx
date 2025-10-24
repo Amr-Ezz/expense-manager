@@ -7,12 +7,13 @@ import { Transaction } from "@/types";
 import { TransactionsContextType } from "@/types";
 import { defaultTransactions } from "../utils/sampleData";
 import { useTransactions } from "@/context/TransactionContext";
+import { useCurrency } from "@/context/CurrencyContext";
 
 
 
 const TransactionsTable: React.FC<TransactionsContextType> = () => {
   const { transactions = defaultTransactions } = useTransactions();
-  console.log("Transaction IDs:", transactions.map(t => t.id));
+  const {currency} = useCurrency();
   return (
       <div className="bg-white dark:bg-[#1E1E1E] p-4 rounded-2xl shadow-md  text-white">
       <h2 className="text-xl font-semibold mb-4">All Transactions</h2>
@@ -32,7 +33,7 @@ const TransactionsTable: React.FC<TransactionsContextType> = () => {
               <td className="p-2">{t.description}</td>
               <td className="p-2">{t.category}</td>
               <td className={`p-2 ${t.type === "income" ? "text-green-400" : "text-red-400"}`}>
-                {t.type === "income" ? "+" : "-"}${t.amount.toFixed(2)}
+                {t.type === "income" ? "+" : "-"}{currency.symbol}{Math.abs(t.amount).toFixed(2)}
               </td>
               <td className="p-2 capitalize">{t.type}</td>
               <td className="p-2">{new Date(t.date).toLocaleDateString()}</td>

@@ -1,6 +1,6 @@
 "use client";
 import { getTheme, ThemeMode, useTheme } from "../../context/ThemeContext";
-import { useCurrency } from "../../context/CurrencyContext";
+import { currencyOptions, useCurrency } from "../../context/CurrencyContext";
 import { useMemo, useState } from "react";
 
 const SettingsPage = () => {
@@ -12,24 +12,19 @@ const SettingsPage = () => {
   const { currency: currentCurrency, setCurrency: setGlobalCurrency } = useCurrency();
 
   const [pendingMode, setPendingMode] = useState<ThemeMode>(currentMode);
-  const [pendingCurrency, setPendingCurrency] = useState<string>(currentCurrency);
+  const [pendingCurrency, setPendingCurrency] = useState<string>(currentCurrency.code);
   const previewTheme = useMemo(() => getTheme(pendingMode), [pendingMode]);
-  const hasChanges = pendingMode !== currentMode || pendingCurrency !== currentCurrency;
+  const hasChanges = pendingMode !== currentMode || pendingCurrency !== currentCurrency.code;
   const handleApply = () => {
     if (pendingMode !== currentMode) setGlobalMode(pendingMode);
-    if (pendingCurrency !== currentCurrency) setGlobalCurrency(pendingCurrency);
+    if (pendingCurrency !== currentCurrency.code) setGlobalCurrency(pendingCurrency);
   };
   const handleCancel = () => {
-  setPendingMode(currentMode);
-  setPendingCurrency(currentCurrency);
-}
+    setPendingMode(currentMode);
+    setPendingCurrency(currentCurrency.code);
+  };
 
-  const currencies = [
-    { code: "USD", symbol: "$" },
-    { code: "EUR", symbol: "€" },
-    { code: "EGP", symbol: "£" },
-    { code: "GBP", symbol: "£" },
-  ];
+ 
 
 
   return (
@@ -112,7 +107,7 @@ const SettingsPage = () => {
               className="p-2 rounded-lg border"
               style={{ background: previewTheme.primary, color: previewTheme.text, borderColor: previewTheme.accent }}
             >
-              {currencies.map((c) => (
+              {currencyOptions.map((c) => (
                 <option key={c.code} value={c.code}>
                   {c.code} ({c.symbol})
                 </option>

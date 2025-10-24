@@ -1,14 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
+model User {
+  id            String          @id @default(cuid())
+  email         String          @unique
+  password      String
+  name          String?
+  image         String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  // Relations
+  settings      UserSettings?
+  transactions  Transaction[]
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  name  String
-  email String  @unique
+
+
+
+model UserSettings {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  currency    String   @default("USD")
+  theme       String   @default("light")
+  language    String   @default("en")
+  notifications Boolean @default(true)
+  timezone    String?  
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+model Transaction {
+  id          String    @id @default(cuid())
+  userId      String
+  description String
+  category    String
+  amount      Float
+  type        String
+  date        DateTime  @default(now())
+  currency    String?   @default("USD")
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

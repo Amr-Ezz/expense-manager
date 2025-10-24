@@ -2,9 +2,11 @@
 
 import React from "react";
 import { useTransactions } from "@/context/TransactionContext";
+import { useCurrency } from "@/context/CurrencyContext";
 
 const ExpenseTable: React.FC = () => {
   const { getExpenses } = useTransactions();
+  const {currency} = useCurrency();
 
   const expenses = typeof getExpenses === "function" ? getExpenses() : [];
 
@@ -25,7 +27,7 @@ const ExpenseTable: React.FC = () => {
             <tr key={e.id} className="border-b border-gray-800 hover:bg-[#2A2A2A] transition">
               <td className="p-2">{e.description}</td>
               <td className="p-2">{e.category}</td>
-              <td className="p-2 text-red-400">- ${e.amount.toFixed(2)}</td>
+              <td className="p-2 text-red-400">- {currency.symbol}{e.amount.toFixed(2)}</td>
               <td className="p-2">{new Date(e.date).toLocaleDateString()}</td>
             </tr>
           ))}

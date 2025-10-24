@@ -1,24 +1,42 @@
 "use client";
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
-interface CurrencyContextProps {
-  currency: string;
-  setCurrency: (currency: string) => void;
+interface Currency {
+  code: string;
+symbol: string;
+};
+ interface CurrencyContextProps {
+  currency: Currency;
+  setCurrency: (code: string) => void;
 }
 
 const CurrencyContext = createContext<CurrencyContextProps | undefined>(undefined);
 
+export const currencyOptions: Currency[] = [
+  { code: "USD", symbol: "$" },
+  { code: "EUR", symbol: "€" },
+  { code: "EGP", symbol: "£" },
+  { code: "GBP", symbol: "£" },
+];
+
 export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
-  const [currency, setCurrencyState] = useState("USD");
+  const [currency, setCurrencyState] = useState<Currency>({ code: "USD", symbol: "$" });
 
   useEffect(() => {
-    const savedCurrency = localStorage.getItem("currency");
-    if (savedCurrency) setCurrencyState(savedCurrency);
+    const savedCode = localStorage.getItem("currencyCode");
+    const savedSymbol = localStorage.getItem("currencySymbol");
+    if (savedCode && savedSymbol) {
+      setCurrencyState({ code: savedCode, symbol: savedSymbol });
+    }
   }, []);
 
-  const setCurrency = (newCurrency: string) => {
-    setCurrencyState(newCurrency);
-    localStorage.setItem("currency", newCurrency);
+  const setCurrency = (newCode: string) => {
+    const newCurrency = currencyOptions.find((c) => c.code === newCode) || currencyOptions[0];
+    if (newCurrency) {
+      setCurrencyState(newCurrency);
+      localStorage.setItem("currencyCode", newCurrency.code);
+      localStorage.setItem("currencySymbol", newCurrency.symbol);
+    }
   };
 
   return (
