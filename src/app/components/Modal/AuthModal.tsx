@@ -1,66 +1,30 @@
-// src/components/Modal/AuthModal.tsx
-import { useTheme } from "../../../context/ThemeContext";
-import LoginForm from "../Forms/LoginForm";
-import RegisterForm from "../Forms/RegisterForm";
+"use client";
+import { useState } from "react";
+import LoginForm from "@/app/components/Forms/LoginForm";
+import RegisterForm from "@/app/components/Forms/RegisterForm";
 
 interface AuthModalProps {
-  open: boolean;
   onClose: () => void;
-  type: "login" | "register";
+  mode: "login" | "register";
 }
 
-export default function AuthModal({ open, onClose, type }: AuthModalProps) {
-  const theme = useTheme();
-
-  if (!open) return null;
-
+const AuthModal: React.FC<AuthModalProps> = ({ onClose, mode }) => {
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        background: "rgba(0,0,0,0.5)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 1000,
-      }}
-      onClick={onClose}
-    >
-      <div
-        style={{
-          background: theme.colors.surface,
-          borderRadius: theme.radius.md,
-          padding: "2rem",
-          maxWidth: "400px",
-          width: "90%",
-          boxShadow: theme.shadow.lg,
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <h2 style={{ color: theme.colors.primary, marginBottom: "1rem" }}>
-            {type === "login" ? "Login" : "Register"}
-          </h2>
-          <button
-            onClick={onClose}
-            style={{
-              border: "none",
-              background: "transparent",
-              fontSize: "1.5rem",
-              cursor: "pointer",
-              color: theme.colors.textSecondary,
-            }}
-          >
-            &times;
-          </button>
-        </div>
-
-        {type === "login" ? <LoginForm /> : <RegisterForm />}
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 w-[90%] max-w-md shadow-lg relative">
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-3 text-gray-600 dark:text-gray-300 text-xl"
+        >
+          ✕
+        </button>
+        <h2 className="text-2xl font-semibold text-center mb-4 text-primary">
+          {mode === "login" ? "Login" : "Register"}
+        </h2>
+        {mode === "login" ? <LoginForm /> : <RegisterForm />}
       </div>
     </div>
   );
-}
+};
+
+export default AuthModal;

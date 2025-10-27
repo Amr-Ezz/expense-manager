@@ -6,6 +6,7 @@ export interface Transaction {
   date: string;
   type: "income" | "expense";
   userId?: string;
+  currency?: string;
 }
 
 export interface TransactionsContextType {
@@ -18,4 +19,23 @@ export interface TransactionsContextType {
 export interface AddExpenseModalProps {
   onClose: () => void;
   isOpen: boolean;
+}
+export interface User {
+  id: string;
+  email: string;
+  name?: string;
+  image?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  settings?: UserSettings;
+  transactions?: Transaction[];
+}
+export interface UserSettings {
+  id: string;
+  userId: string;
+  currency: string;
+  theme: string;
+  language: string;
+  notifications: boolean;
+  timezone?: string;
 }
