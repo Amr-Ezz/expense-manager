@@ -1,32 +1,48 @@
-// src/components/Forms/RegisterForm.tsx
-import { useAuth } from "@/hooks/useAuth";
-import { useTheme } from "../../../context/ThemeContext";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
-export default function RegisterForm() {
-  const theme = useTheme();
-  const {register} = useAuth();
-  const [fullName, setFullName] = useState("");
+interface RegisterFormProps {
+  onSuccess?: () => void;
+}
+
+const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
+  const { register } = useAuth();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
+    if (name.trim().length < 2) {
+      return setError("Name must be at least 2 characters.");
+    }
+    if (!email.includes("@")) {
+      return setError("Please enter a valid email.");
+    }
+    if (password.length < 6) {
+      return setError("Password must be at least 6 characters.");
+    }
+
     try {
-      await register(fullName, email, password);
-      alert("Registration successful!");
-    } catch (error) {
-      alert("Registration failed. Please try again.");
+      await register(email, password, name);
+      alert("✅ Account created successfully!");
+      if (onSuccess) onSuccess();
+    } catch {
+      setError("❌ Registration failed. Please try again.");
     }
   };
 
   return (
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      {error && <p className="text-red-500 text-sm">{error}</p>}
       <input
         type="text"
         placeholder="Full Name"
-        value={fullName}
-        onChange={(e) => setFullName(e.target.value)}
+        value={name}
+        onChange={(e) => setName(e.target.value)}
         required
         className="p-2 border rounded"
       />
@@ -46,9 +62,14 @@ export default function RegisterForm() {
         required
         className="p-2 border rounded"
       />
-      <button type="submit" className="bg-primary text-white py-2 rounded">
+      <button
+        type="submit"
+        className="bg-primary text-white font-semibold py-2 rounded hover:opacity-90"
+      >
         Register
       </button>
     </form>
   );
-}
+};
+
+export default RegisterForm;

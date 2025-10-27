@@ -1,57 +1,63 @@
-// src/components/Forms/LoginForm.tsx
-import { useAuth } from "@/hooks/useAuth";
-import { useTheme } from "../../../context/ThemeContext";
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
-export default function LoginForm() {
-  const theme = useTheme();
+interface LoginFormProps {
+  onSuccess?: () => void;
+}
+
+const LoginForm = ({ onSuccess }: LoginFormProps) => {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
+    if (!email.includes("@")) {
+      return setError("Please enter a valid email.");
+    }
+    if (password.length < 6) {
+      return setError("Password must be at least 6 characters.");
+    }
+
     try {
       await login(email, password);
-      alert("Login successful!");
-    } catch (error) {
-      alert("Login failed. Please check your credentials.");
+      alert("✅ Logged in successfully!");
+      if (onSuccess) onSuccess();
+    } catch {
+      setError("❌ Login failed. Please check your credentials.");
     }
   };
 
-
   return (
-    <form style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      {error && <p className="text-red-500 text-sm">{error}</p>}
       <input
         type="email"
         placeholder="Email"
-        style={{
-          padding: "0.75rem 1rem",
-          border: `1px solid ${theme.theme.secondary}`,
-          
-        }}
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+        className="p-2 border rounded"
       />
       <input
         type="password"
         placeholder="Password"
-        style={{
-          padding: "0.75rem 1rem",
-          border: `1px solid ${theme.theme.secondary}`,
-          
-        }}
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+        className="p-2 border rounded"
       />
       <button
         type="submit"
-        style={{
-          background: theme.theme.accent,
-          color: "white",
-          padding: "0.75rem 1rem",
-          border: "none",
-          cursor: "pointer",
-        }}
+        className="bg-primary text-white font-semibold py-2 rounded hover:opacity-90"
       >
         Login
       </button>
     </form>
   );
-}
+};
+
+export default LoginForm;
