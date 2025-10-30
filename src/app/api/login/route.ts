@@ -1,39 +1,48 @@
 import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
 export async function POST(req: Request) {
-  const { email, password } = await req.json();
   try {
+    const { email, password } = await req.json();
+
+    console.log("🧩 Login attempt:", { email, password });
+
     if (!email || !password) {
-      return new Response(
-        JSON.stringify({ error: "Missing email or password" }),
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing email or password" }, { status: 400 });
     }
-    const user = await prisma.user.findUnique({
-      where: { email },
-      include: { settings: true },
+
+    // Force-trim and lowercase email
+    const cleanedEmail = email.trim().toLowerCase();
+
+    // Find user by email
+    const user = await prisma.user.findFirst({
+      where: {
+        email: { equals: cleanedEmail, mode: "insensitive" }, // case-insensitive search
+      },
     });
+
+    console.log("🔍 Found user:", user ? user.email : "none");
+
     if (!user) {
-      return new Response(
-        JSON.stringify({ error: "Invalid email or password" }),
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
     }
-    const isPasswordValid = bcrypt.compareSync(password, user.password);
-    if (!isPasswordValid) {
-      return new Response(
-        JSON.stringify({ error: "Invalid email or password" }),
-        { status: 401 }
-      );
+
+    const isValid = await bcrypt.compare(password, user.password);
+    console.log("✅ Password valid:", isValid);
+
+    if (!isValid) {
+      return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
     }
+
     const { password: _, ...userWithoutPassword } = user;
-    return new Response(JSON.stringify({ user: userWithoutPassword }), {
-      status: 200,
-    });
+
+    return NextResponse.json(
+      { message: "Login successful", user: userWithoutPassword },
+      { status: 200 }
+    );
   } catch (error) {
-    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
-      status: 500,
-    });
+    console.error("💥 Login error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

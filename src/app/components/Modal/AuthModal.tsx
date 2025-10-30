@@ -21,7 +21,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, mode }) => {
         <h2 className="text-2xl font-semibold text-center mb-4 text-primary">
           {mode === "login" ? "Login" : "Register"}
         </h2>
-        {mode === "login" ? <LoginForm /> : <RegisterForm />}
+        {mode === "login" ? <LoginForm /> : <RegisterForm onClose={onClose} />}
       </div>
     </div>
   );

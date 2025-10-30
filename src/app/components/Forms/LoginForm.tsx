@@ -1,60 +1,68 @@
-import { useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "react-toastify";
+import { useAuth } from "../../../hooks/useAuth";
 
-interface LoginFormProps {
-  onSuccess?: () => void;
-}
+const loginSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
 
-const LoginForm = ({ onSuccess }: LoginFormProps) => {
+type LoginFormData = z.infer<typeof loginSchema>;
+
+const LoginForm = () => {
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
 
-    if (!email.includes("@")) {
-      return setError("Please enter a valid email.");
-    }
-    if (password.length < 6) {
-      return setError("Password must be at least 6 characters.");
-    }
-
+  const onSubmit = async (data: LoginFormData) => {
     try {
-      await login(email, password);
-      alert("✅ Logged in successfully!");
-      if (onSuccess) onSuccess();
-    } catch {
-      setError("❌ Login failed. Please check your credentials.");
+      await login(data.email, data.password);
+      toast.success("Login successful 🎉");
+    } catch (err: any) {
+      toast.error(err?.message || "Invalid credentials ❌");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        className="p-2 border rounded"
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-        className="p-2 border rounded"
-      />
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div>
+        <input
+          type="email"
+          placeholder="Email"
+          {...register("email")}
+          className="w-full p-2 border rounded"
+        />
+        {errors.email && (
+          <p className="text-red-500 text-sm">{errors.email.message}</p>
+        )}
+      </div>
+
+      <div>
+        <input
+          type="password"
+          placeholder="Password"
+          {...register("password")}
+          className="w-full p-2 border rounded"
+        />
+        {errors.password && (
+          <p className="text-red-500 text-sm">{errors.password.message}</p>
+        )}
+      </div>
+
       <button
         type="submit"
-        className="bg-primary text-white font-semibold py-2 rounded hover:opacity-90"
+        disabled={isSubmitting}
+        className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
       >
-        Login
+        {isSubmitting ? "Logging in..." : "Login"}
       </button>
     </form>
   );

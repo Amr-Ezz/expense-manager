@@ -5,6 +5,7 @@ import { TransactionsProvider } from "@/context/TransactionContext";
 import { ThemeProvider } from "../context/ThemeContext";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import { AuthProvider } from "@/context/AuthContext";
+import ToastProvider from "./components/ToastContainer";
 
 export const metadata: Metadata = {
   title: "Expense Manager",
@@ -19,6 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-surface text-[#334443]">
+        <ToastProvider />
         <ThemeProvider>
           <AuthProvider>
             <TransactionsProvider>

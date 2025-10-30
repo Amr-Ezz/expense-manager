@@ -1,16 +1,28 @@
-export async function apiRequest(url: string, options: RequestInit = {}) {
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers || {}),
-    },
-  });
+export async function apiRequest(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<any> {
+  try {
+    console.log("📡 API Request to:", endpoint);
+    console.log("🧾 Options:", options);
 
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.error || "API request failed");
+    const res = await fetch(endpoint, {
+      headers: { "Content-Type": "application/json" },
+      ...options,
+    });
+
+    const data = await res.json();
+
+    console.log("📨 Response status:", res.status);
+    console.log("📦 Response data:", data);
+
+    if (!res.ok) {
+      throw new Error(data.error || "API request failed");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("🚨 apiRequest error:", error);
+    throw error;
   }
-
-  return response.json();
 }
