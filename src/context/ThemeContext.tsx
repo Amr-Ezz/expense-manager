@@ -53,20 +53,27 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [mode, setModeState] = useState<ThemeMode>("light");
 
   useEffect(() => {
-    const saved =
-      typeof window !== "undefined" ? localStorage.getItem("themeMode") : null;
-    if (saved === "dark" || saved === "light") setModeState(saved);
+    const user = localStorage.getItem("user");
+    if (!user) {
+      const saved = localStorage.getItem("themeMode");
+      if (saved === "dark" || saved === "light") setModeState(saved);
+    }
   }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", mode === "dark");
+  }, [mode]);
 
   const setMode = (newMode: ThemeMode) => {
     setModeState(newMode);
-    if (typeof window !== "undefined")
-      localStorage.setItem("themeMode", newMode);
+    localStorage.setItem("themeMode", newMode); 
   };
 
   const toggleTheme = () => setMode(mode === "light" ? "dark" : "light");
 
   const theme = getTheme(mode);
+
+ 
 
   return (
     <ThemeContext.Provider value={{ mode, setMode, toggleTheme, theme }}>

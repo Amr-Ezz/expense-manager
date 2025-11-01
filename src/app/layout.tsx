@@ -6,6 +6,7 @@ import { ThemeProvider } from "../context/ThemeContext";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import { AuthProvider } from "@/context/AuthContext";
 import ToastProvider from "./components/ToastContainer";
+import ToastContainer from "./components/ToastContainer";
 
 export const metadata: Metadata = {
   title: "Expense Manager",
@@ -20,16 +21,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-surface text-[#334443]">
-        <ToastProvider />
         <ThemeProvider>
-          <AuthProvider>
-            <TransactionsProvider>
-              <CurrencyProvider>
-                <Navbar />
-                <main className="pt-5 px-6">{children}</main>
-              </CurrencyProvider>
-            </TransactionsProvider>
-          </AuthProvider>
+          <CurrencyProvider>
+            <AuthProvider>
+              <Navbar />
+              <main className="pt-5 px-6">{children}</main>
+              <ToastProvider />{" "}
+            </AuthProvider>
+          </CurrencyProvider>
         </ThemeProvider>
       </body>
     </html>

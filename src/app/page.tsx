@@ -2,7 +2,7 @@
 import StatsCard from "./components/StatsCard";
 import ChartsArea from "./components/ChartsCard";
 import RecentTransactions from "./components/RecentTransactions";
-import { useCurrency } from "@/context/CurrencyContext";
+import { useCurrency } from "@/hooks/useCurrency";
 
 export default function DashboardPage() {
   const {currency} = useCurrency();

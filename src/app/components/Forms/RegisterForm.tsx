@@ -43,7 +43,7 @@ const RegisterForm = ({ onClose }: RegisterFormProps) => {
       toast.success("Registration successful 🎉", {
         autoClose: 2000,
         onClose: () => {
-          if (onClose) onClose(); // ✅ close after toast
+          if (onClose) onClose();
         },
       });
     } catch (err: any) {

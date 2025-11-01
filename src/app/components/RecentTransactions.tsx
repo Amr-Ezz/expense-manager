@@ -1,6 +1,6 @@
 "use client";
 
-import { useCurrency } from "@/context/CurrencyContext";
+import { useCurrency } from "@/hooks/useCurrency";
 import { useTheme } from "@/context/ThemeContext";
 
 export default function RecentTransactions({ transactions }: { transactions?: Array<{id:number; name:string; amount:number; date:string}> }) {

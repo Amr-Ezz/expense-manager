@@ -10,7 +10,7 @@ symbol: string;
   setCurrency: (code: string) => void;
 }
 
-const CurrencyContext = createContext<CurrencyContextProps | undefined>(undefined);
+ export const CurrencyContext = createContext<CurrencyContextProps | undefined>(undefined);
 
 export const currencyOptions: Currency[] = [
   { code: "USD", symbol: "$" },
@@ -46,8 +46,4 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const useCurrency = () => {
-  const context = useContext(CurrencyContext);
-  if (!context) throw new Error("useCurrency must be used inside CurrencyProvider");
-  return context;
-};
+

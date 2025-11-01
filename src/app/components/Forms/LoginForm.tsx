@@ -10,8 +10,11 @@ const loginSchema = z.object({
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
+interface LoginFormProps {
+  onClose?: () => void;
+}
 
-const LoginForm = () => {
+const LoginForm = ({ onClose }: LoginFormProps) => {
   const { login } = useAuth();
 
   const {
@@ -25,7 +28,14 @@ const LoginForm = () => {
   const onSubmit = async (data: LoginFormData) => {
     try {
       await login(data.email, data.password);
-      toast.success("Login successful 🎉");
+      
+      toast.success("Login successful 🎉", {
+        autoClose: 2000,
+        onClose: () => {
+          if (onClose) onClose();
+        },
+      });
+
     } catch (err: any) {
       toast.error(err?.message || "Invalid credentials ❌");
     }
