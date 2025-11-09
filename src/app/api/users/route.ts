@@ -16,12 +16,21 @@ export async function POST(req: Request) {
         password: hashedPassword,
       },
     });
+    await prisma.userSettings.create({
+      data: {
+        userId: user.id,
+        currency: "USD",
+        theme: "light",
+        language: "en",
+        notifications: true,
+      },
+    });
     return NextResponse.json(
       { message: "User created successfully", user },
       { status: 201 }
     );
   } catch (error) {
-      console.error("Error creating user:", error);
+    console.error("Error creating user:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

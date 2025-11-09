@@ -8,6 +8,7 @@ symbol: string;
  interface CurrencyContextProps {
   currency: Currency;
   setCurrency: (code: string) => void;
+    convertAmount: (amount: number, from: string, to?: string) => Promise<number>;
 }
 
  export const CurrencyContext = createContext<CurrencyContextProps | undefined>(undefined);
@@ -38,9 +39,15 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem("currencySymbol", newCurrency.symbol);
     }
   };
+    const convertAmount = async (amount: number, from: string, to = currency.code): Promise<number> => {
+    if (from === to) return amount;
+    const res = await fetch(`/api/exchange?from=${from}&to=${to}`);
+    const data = await res.json();
+    return amount * data.rate;
+  };
 
   return (
-    <CurrencyContext.Provider value={{ currency, setCurrency }}>
+    <CurrencyContext.Provider value={{ currency, setCurrency, convertAmount }}>
       {children}
     </CurrencyContext.Provider>
   );

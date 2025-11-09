@@ -11,7 +11,7 @@ export interface Transaction {
 
 export interface TransactionsContextType {
   transactions: Transaction[];
-  addTransaction: (transaction: Transaction) => void;
+  addTransaction?: (transaction: Transaction) => void;
   getExpenses?: () => Transaction[];
   getIncomes?: () => Transaction[];
   currentUserId?: string;
