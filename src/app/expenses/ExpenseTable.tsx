@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useTransactions } from "@/context/TransactionContext";
+import { useTransactions } from "@/hooks/useTransaction";
 import { useCurrency } from "@/hooks/useCurrency";
 
 const ExpenseTable: React.FC = () => {

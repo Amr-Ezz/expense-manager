@@ -2,7 +2,7 @@
 import { useState } from "react";
 import AddExpenseModal from "../components/Modal/AddExpenseModal";
 import ExpenseTable from "./ExpenseTable";
-import { useTransactions } from "@/context/TransactionContext";
+import { useTransactions } from "@/hooks/useTransaction";
 import Button from "../components/ui/button";
 
 export default function ExpensesPage() {

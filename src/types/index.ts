@@ -11,10 +11,11 @@ export interface Transaction {
 
 export interface TransactionsContextType {
   transactions: Transaction[];
-  addTransaction?: (transaction: Transaction) => void;
+  addTransaction?: (transaction: Omit<Transaction, "id">) => void;
   getExpenses?: () => Transaction[];
   getIncomes?: () => Transaction[];
-  currentUserId?: string;
+  deleteTransaction?: (id: string) => void;
+  fetchTransactions?: () => Promise<void>;
 }
 export interface AddExpenseModalProps {
   onClose: () => void;

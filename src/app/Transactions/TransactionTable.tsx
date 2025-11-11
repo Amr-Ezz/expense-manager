@@ -6,7 +6,7 @@ import { Transaction } from "@/types";
 
 import { TransactionsContextType } from "@/types";
 import { defaultTransactions } from "../utils/sampleData";
-import { useTransactions } from "@/context/TransactionContext";
+import { useTransactions } from "@/hooks/useTransaction";
 import { useCurrency } from "@/hooks/useCurrency";
 
 

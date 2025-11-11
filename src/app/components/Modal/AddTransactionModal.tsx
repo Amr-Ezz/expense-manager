@@ -1,7 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import { useTransactions } from "@/context/TransactionContext";
+import { useTransactions } from "@/hooks/useTransaction";
 import { title } from "process";
+import { useAuth } from "@/hooks/useAuth";
 
 interface AddTransactionModalProps {
   isOpen: boolean;
@@ -13,6 +14,9 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   onClose,
 }) => {
   const { addTransaction } = useTransactions();
+  const { user } = useAuth();
+
+
   const [title, setTitle] = useState("");
   const [type, setType] = useState("Expense");
   const [category, setCategory] = useState("");
@@ -21,23 +25,45 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!category || !amount || !date) return;
 
-    addTransaction({
-      description: title,
-      type: type.toLowerCase() as "income" | "expense",
-      category,
-      amount: parseFloat(amount),
-      date,
-      id: ""
-    });
-setTitle("");
-    setCategory("");
-    setAmount("");
-    setDate("");
-    onClose();
+    if (!user) {
+      alert("You must be logged in to add a transaction");
+      return;
+    }
+
+    if (!category || !amount || !date || !title) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    try {
+      if (!addTransaction) {
+        console.error("addTransaction is undefined");
+        alert("Unable to add transaction: service unavailable");
+        return;
+      }
+
+      await addTransaction({
+        userId: user.id, 
+        description: title,
+        category,
+        type: type.toLowerCase() as "income" | "expense",
+        amount: parseFloat(amount),
+        date,
+        currency: user.settings?.currency || "USD", 
+      });
+
+      setTitle("");
+      setCategory("");
+      setAmount("");
+      setDate("");
+      onClose();
+    } catch (err) {
+      console.error("Error adding transaction:", err);
+      alert("Failed to add transaction");
+    }
   };
 
   return (

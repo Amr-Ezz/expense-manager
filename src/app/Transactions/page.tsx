@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useTransactions } from "../../context/TransactionContext";
+import { useTransactions } from "@/hooks/useTransaction";
 import TransactionsTable from "./TransactionTable";
 import AddTransactionModal from "../../app/components/Modal/AddTransactionModal";
 import Button  from "../components/ui/button";

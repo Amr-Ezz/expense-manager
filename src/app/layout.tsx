@@ -23,14 +23,14 @@ export default function RootLayout({
       <body className="bg-surface text-[#334443]">
         <ThemeProvider>
           <CurrencyProvider>
+            <AuthProvider>
             <TransactionsProvider>
 
-            <AuthProvider>
               <Navbar />
               <main className="pt-5 px-6">{children}</main>
               <ToastProvider />{" "}
-            </AuthProvider>
             </TransactionsProvider>
+            </AuthProvider>
           </CurrencyProvider>
         </ThemeProvider>
       </body>

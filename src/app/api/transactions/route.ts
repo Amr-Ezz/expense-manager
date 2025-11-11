@@ -4,30 +4,29 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { amount, currency, userCurrency, userId } = await req.json();
+    const { userId, description, category, amount, type, date, currency } =
+      await req.json();
 
-    if (!amount || !currency || !userCurrency || !userId) {
-      return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+    if (!userId) {
+      return NextResponse.json({ error: "Missing userId" }, { status: 400 });
     }
-
-    const rate = await getRate(currency, userCurrency);
-    const convertedAmount = amount * rate;
 
     const transaction = await prisma.transaction.create({
       data: {
-        amount,
-        currency,
-        convertedAmount,
-        convertedCurrency: userCurrency,
-        rate,
         userId,
+        description,
+        category,
+        amount,
+        type,
+        date: date ? new Date(date) : new Date(),
+        currency: currency || "USD",
       },
     });
 
-    return NextResponse.json(transaction);
-  } catch (error: any) {
+    return NextResponse.json(transaction, { status: 201 });
+  } catch (error) {
     console.error("Error creating transaction:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: "Failed to create transaction" }, { status: 500 });
   }
 }
 export async function GET(req: Request) {

@@ -1,10 +1,14 @@
 "use client";
-import { useTransactions } from "@/context/TransactionContext";
+import { useTransactions } from "@/hooks/useTransaction";
 import { useState } from "react";
 
 import { AddExpenseModalProps } from "@/types";
+import { useAuth } from "@/hooks/useAuth";
 
-export default function AddExpenseModal({ onClose, isOpen }: AddExpenseModalProps) {
+export default function AddExpenseModal({
+  onClose,
+  isOpen,
+}: AddExpenseModalProps) {
   // const [form, setForm] = useState({
   //   title: "",
   //   amount: "",
@@ -22,30 +26,55 @@ export default function AddExpenseModal({ onClose, isOpen }: AddExpenseModalProp
   //   onClose();
   // };
   const { addTransaction } = useTransactions();
+  const { user } = useAuth();
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
 
   const [amount, setAmount] = useState<number | "">("");
   const [type, setType] = useState<"income" | "expense">("income");
-  const handleSubmit = (e: React.FormEvent) => {
+
+  if (!isOpen) return null;
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || !title) return;
 
-    addTransaction({
-      description: title,
-      id: Date.now().toLocaleString(),
-      amount: Number(amount),
-      category,
-      type: 'expense',
-      date: new Date().toLocaleDateString(),
+    if (!user) {
+      alert("You must be logged in to add a transaction");
+      return;
+    }
 
-    });
-    setTitle("");
-    setCategory("");
-    setAmount("");
-  
-    onClose();
-  }
+    if (!amount || !title || !category) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    try {
+      if (!addTransaction) {
+        console.error("addTransaction is not available");
+        alert("Cannot add transaction at this time");
+        return;
+      }
+
+      await addTransaction({
+        userId: user.id,
+        description: title,
+        category,
+        type,
+        amount: Number(amount),
+        date: new Date().toISOString(),
+        currency: user.settings?.currency || "USD",
+      });
+
+      setTitle("");
+      setCategory("");
+      setAmount("");
+
+      onClose();
+    } catch (error) {
+      console.error("Error adding expense:", error);
+      alert("Failed to add expense");
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
@@ -63,7 +92,7 @@ export default function AddExpenseModal({ onClose, isOpen }: AddExpenseModalProp
             className="w-full p-2 border border-gray-200 rounded-md"
             required
           />
-               <input
+          <input
             name="category"
             type="text"
             placeholder="Category"
@@ -81,8 +110,6 @@ export default function AddExpenseModal({ onClose, isOpen }: AddExpenseModalProp
             className="w-full p-2 border border-gray-200 rounded-md"
             required
           />
-        
-     
 
           <div className="flex justify-end space-x-2 pt-2">
             <button
