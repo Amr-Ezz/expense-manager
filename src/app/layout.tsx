@@ -24,12 +24,11 @@ export default function RootLayout({
         <ThemeProvider>
           <CurrencyProvider>
             <AuthProvider>
-            <TransactionsProvider>
-
-              <Navbar />
-              <main className="pt-5 px-6">{children}</main>
-              <ToastProvider />{" "}
-            </TransactionsProvider>
+              <TransactionsProvider>
+                <Navbar />
+                <main className="pt-5 px-6">{children}</main>
+                <ToastProvider />{" "}
+              </TransactionsProvider>
             </AuthProvider>
           </CurrencyProvider>
         </ThemeProvider>

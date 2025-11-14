@@ -1,12 +1,18 @@
 export interface Transaction {
   id: string;
-  description?: string;
-  amount: number;
+  userId: string;
+
+  description: string;
   category: string;
-  date: string;
+  amount: number;
   type: "income" | "expense";
-  userId?: string;
+  date: string;
+
   currency?: string;
+
+  convertedAmount?: number;
+  convertedCurrency?: string;
+  rate?: number;
 }
 
 export interface TransactionsContextType {
@@ -15,6 +21,8 @@ export interface TransactionsContextType {
   getExpenses?: () => Transaction[];
   getIncomes?: () => Transaction[];
   deleteTransaction?: (id: string) => void;
+  recalculateTransactions?: () => Promise<void>;
+  loading?: boolean;
   fetchTransactions?: () => Promise<void>;
 }
 export interface AddExpenseModalProps {

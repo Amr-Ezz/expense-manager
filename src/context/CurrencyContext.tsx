@@ -1,17 +1,22 @@
 "use client";
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { useTransactions } from "@/hooks/useTransaction"; 
+import ToastProvider from "@/app/components/ToastContainer"; 
+import { toast } from "react-toastify";
+import { TransactionsContext } from "./TransactionContext";
 
 interface Currency {
   code: string;
-symbol: string;
-};
- interface CurrencyContextProps {
-  currency: Currency;
-  setCurrency: (code: string) => void;
-    convertAmount: (amount: number, from: string, to?: string) => Promise<number>;
+  symbol: string;
 }
 
- export const CurrencyContext = createContext<CurrencyContextProps | undefined>(undefined);
+interface CurrencyContextProps {
+  currency: Currency;
+  setCurrency: (code: string) => Promise<void>;
+  convertAmount: (amount: number, from: string, to?: string) => Promise<number>;
+}
+
+export const CurrencyContext = createContext<CurrencyContextProps | undefined>(undefined);
 
 export const currencyOptions: Currency[] = [
   { code: "USD", symbol: "$" },
@@ -22,7 +27,9 @@ export const currencyOptions: Currency[] = [
 
 export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
   const [currency, setCurrencyState] = useState<Currency>({ code: "USD", symbol: "$" });
+  const transactionsContext = useContext(TransactionsContext);
 
+  const recalculateTransactions = transactionsContext?.recalculateTransactions;
   useEffect(() => {
     const savedCode = localStorage.getItem("currencyCode");
     const savedSymbol = localStorage.getItem("currencySymbol");
@@ -31,19 +38,41 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const setCurrency = (newCode: string) => {
-    const newCurrency = currencyOptions.find((c) => c.code === newCode) || currencyOptions[0];
+  const setCurrency = async (newCode: string) => {
+    const newCurrency =
+      currencyOptions.find((c) => c.code === newCode) || currencyOptions[0];
+
     if (newCurrency) {
       setCurrencyState(newCurrency);
       localStorage.setItem("currencyCode", newCurrency.code);
       localStorage.setItem("currencySymbol", newCurrency.symbol);
+
+      try {
+        if (typeof recalculateTransactions === "function") {
+          await recalculateTransactions();
+          toast.success(`Currency changed to ${newCurrency.code} and transactions updated!`);
+        }
+      } catch (error) {
+        console.error("Error recalculating transactions:", error);
+      }
     }
   };
-    const convertAmount = async (amount: number, from: string, to = currency.code): Promise<number> => {
+
+  const convertAmount = async (
+    amount: number,
+    from: string,
+    to = currency.code
+  ): Promise<number> => {
     if (from === to) return amount;
-    const res = await fetch(`/api/exchange?from=${from}&to=${to}`);
-    const data = await res.json();
-    return amount * data.rate;
+    try {
+      const res = await fetch(`/api/exchange?from=${from}&to=${to}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Rate fetch failed");
+      return amount * data.rate;
+    } catch (err) {
+      console.error("Error converting amount:", err);
+      return amount;
+    }
   };
 
   return (

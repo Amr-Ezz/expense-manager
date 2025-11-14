@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const { setMode } = useTheme();
-  const { setCurrency } = useCurrency();
+  const { setCurrency } = useCurrency?.() || {};
 
   const fetchUserSettings = async (userId: string) => {
     try {
