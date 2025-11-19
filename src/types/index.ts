@@ -48,3 +48,25 @@ export interface UserSettings {
   notifications: boolean;
   timezone?: string;
 }
+export interface Currency {
+  code: string;
+  symbol: string;
+  name: string;
+}
+export interface CurrencyContextProps {
+  currency: Currency;
+  setCurrency: (code: string) => Promise<void>;
+  convertAmount: (amount: number, from: string, to?: string) => Promise<number>;
+}
+export interface AddTransactionModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+export interface CurrencyChangeConfirmationProps {
+  isOpen: boolean;
+  currentCurrency: string;
+  newCurrency: string;
+  transactionCount: number;
+  onConfirm: () => void;
+  onCancel: () => void;
+}

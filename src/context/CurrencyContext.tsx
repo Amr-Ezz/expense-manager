@@ -1,40 +1,40 @@
 "use client";
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { useTransactions } from "@/hooks/useTransaction"; 
-import ToastProvider from "@/app/components/ToastContainer"; 
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { useTransactions } from "@/hooks/useTransaction";
+import ToastProvider from "@/app/components/ToastContainer";
 import { toast } from "react-toastify";
 import { TransactionsContext } from "./TransactionContext";
+import { currencyOptions } from "@/lib/currency";
+import { CurrencyContextProps, Currency } from "@/types";
 
-interface Currency {
-  code: string;
-  symbol: string;
-}
-
-interface CurrencyContextProps {
-  currency: Currency;
-  setCurrency: (code: string) => Promise<void>;
-  convertAmount: (amount: number, from: string, to?: string) => Promise<number>;
-}
-
-export const CurrencyContext = createContext<CurrencyContextProps | undefined>(undefined);
-
-export const currencyOptions: Currency[] = [
-  { code: "USD", symbol: "$" },
-  { code: "EUR", symbol: "€" },
-  { code: "EGP", symbol: "£" },
-  { code: "GBP", symbol: "£" },
-];
-
+export const CurrencyContext = createContext<CurrencyContextProps | undefined>(
+  undefined
+);
 export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
-  const [currency, setCurrencyState] = useState<Currency>({ code: "USD", symbol: "$" });
+  const [currency, setCurrencyState] = useState<Currency>({
+    code: "USD",
+    symbol: "$",
+    name: "US Dollar",
+  });
   const transactionsContext = useContext(TransactionsContext);
 
   const recalculateTransactions = transactionsContext?.recalculateTransactions;
   useEffect(() => {
     const savedCode = localStorage.getItem("currencyCode");
     const savedSymbol = localStorage.getItem("currencySymbol");
-    if (savedCode && savedSymbol) {
-      setCurrencyState({ code: savedCode, symbol: savedSymbol });
+    const savedName = currencyOptions.find((c) => c.code === savedCode)?.name;
+    if (savedCode && savedSymbol && savedName) {
+      setCurrencyState({
+        code: savedCode,
+        symbol: savedSymbol,
+        name: savedName,
+      });
     }
   }, []);
 
@@ -50,7 +50,9 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
       try {
         if (typeof recalculateTransactions === "function") {
           await recalculateTransactions();
-          toast.success(`Currency changed to ${newCurrency.code} and transactions updated!`);
+          toast.success(
+            `Currency changed to ${newCurrency.code} and transactions updated!`
+          );
         }
       } catch (error) {
         console.error("Error recalculating transactions:", error);
@@ -81,5 +83,3 @@ export const CurrencyProvider = ({ children }: { children: ReactNode }) => {
     </CurrencyContext.Provider>
   );
 };
-
-
