@@ -165,7 +165,7 @@ export default function ChartsArea() {
               display: true,
               position: "top",
               labels: {
-                color: theme.text || "#000",
+                color: "#ffffff",
                 usePointStyle: true,
                 padding: 15,
               },
@@ -187,18 +187,18 @@ export default function ChartsArea() {
             y: {
               beginAtZero: true,
               ticks: {
-                color: theme.text || "#666",
+                color: "#ffffff",
                 callback: function (value) {
                   return currency.symbol + value;
                 },
               },
               grid: {
-                color: "rgba(0, 0, 0, 0.05)",
+                color: "rgba(255, 255, 255, 0.1)",
               },
             },
             x: {
               ticks: {
-                color: theme.text || "#666",
+                color: "#ffffff",
               },
               grid: {
                 display: false,
@@ -225,7 +225,7 @@ export default function ChartsArea() {
             legend: {
               position: "bottom",
               labels: {
-                color: theme.text || "#000",
+                color: "#ffffff",
                 padding: 15,
                 usePointStyle: true,
               },
@@ -263,7 +263,7 @@ export default function ChartsArea() {
         <div className="bg-white dark:bg-[#1E1E1E] p-4 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm h-72">
           <div className="animate-pulse">
             <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-3"></div>
-            <div className="h-56 bg-gray-100 dark:bg-gray-800 rounded"></div>
+            <div className="h-56 bg-gray-100 text-white dark:bg-gray-800 rounded"></div>
           </div>
         </div>
 
@@ -282,7 +282,7 @@ export default function ChartsArea() {
     return (
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="bg-white dark:bg-[#1E1E1E] p-4 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm h-72 flex items-center justify-center">
-          <div className="text-center text-gray-500 dark:text-gray-400">
+          <div className="text-center text-white">
             <svg className="mx-auto h-12 w-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
@@ -291,7 +291,7 @@ export default function ChartsArea() {
           </div>
         </div>
         <div className="bg-white dark:bg-[#1E1E1E] p-4 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm h-72 flex items-center justify-center">
-          <div className="text-center text-gray-500 dark:text-gray-400">
+          <div className="text-center text-white">
             <svg className="mx-auto h-12 w-12 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
@@ -308,14 +308,14 @@ export default function ChartsArea() {
     <div className="grid gap-6 lg:grid-cols-2">
       {/* Line Chart */}
       <div className="bg-white dark:bg-[#1E1E1E] p-4 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm h-96 flex flex-col">
-        <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white shrink-0">
+        <h3 className="text-lg font-semibold mb-3 text-white shrink-0">
           Income vs Expenses (Last 6 Months)
         </h3>
         <div className="flex-grow min-h-0">
           {lineChartData ? (
             <canvas ref={lineRef}></canvas>
           ) : (
-            <div className="h-full flex items-center justify-center text-gray-400">
+            <div className="h-full flex items-center justify-center text-white">
               No data available
             </div>
           )}
@@ -324,14 +324,14 @@ export default function ChartsArea() {
 
       {/* Doughnut Chart */}
       <div className="bg-white dark:bg-[#1E1E1E] p-4 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm h-96 flex flex-col">
-        <h3 className="text-lg font-semibold mb-3 text-gray-800 dark:text-white shrink-0">
+        <h3 className="text-lg font-semibold mb-3 text-white shrink-0">
           Expense Breakdown (This Month)
         </h3>
         <div className="flex-grow min-h-0 flex items-center justify-center relative">
           {doughnutChartData ? (
             <canvas ref={doughnutRef} style={{ maxWidth: "100%", maxHeight: "100%" }}></canvas>
           ) : (
-            <div className="text-center text-gray-400">
+            <div className="text-center text-white">
               No expenses this month
             </div>
           )}
