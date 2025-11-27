@@ -3,9 +3,9 @@ import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AuthModal from "../Modal/AuthModal";
-import { NAV_ITEMS, NAVBAR_CONFIG } from "@/lib/navigation";
+import { NAV_ITEMS, NAVBAR_CONFIG } from "@/lib/navigation"
 
 export default function Navbar() {
   const themeContext = useTheme();
@@ -22,6 +22,19 @@ export default function Navbar() {
   const [modal, setModal] = useState<"login" | "register">("login");
   const [modalOpen, setModalOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Listen for auth modal events from other components
+  useEffect(() => {
+    const handleOpenAuthModal = (event: CustomEvent<"login" | "register">) => {
+      openModal(event.detail);
+    };
+
+    window.addEventListener('openAuthModal' as any, handleOpenAuthModal);
+
+    return () => {
+      window.removeEventListener('openAuthModal' as any, handleOpenAuthModal);
+    };
+  }, []);
 
   const handleLogout = () => {
     const confirmLogout = confirm("Are you sure you want to logout?");
